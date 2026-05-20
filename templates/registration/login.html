@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block public_content %}
+<section class="login-shell login-stage">
+    <div class="money-note note-one"></div>
+    <div class="money-note note-two"></div>
+    <div class="money-note note-three"></div>
+    <div class="money-note note-four"></div>
+
+    <form method="post" class="form-box login-card">
+        {% csrf_token %}
+        <div class="login-brand">
+            <span>SACCO</span>
+            <h1>Account Login</h1>
+        </div>
+        <div class="loan-ticker" aria-label="Loan information">
+            <span>Apply for loans securely</span>
+            <span>Track approvals from your dashboard</span>
+            <span>View repayment estimates before submitting</span>
+            <span>Get notified when your loan is approved</span>
+        </div>
+        {% if form.errors %}
+            <p class="error">Invalid username or password.</p>
+        {% endif %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
+</section>
+{% endblock %}

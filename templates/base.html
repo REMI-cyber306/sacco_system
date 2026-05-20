@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SACCO System</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    {% if request.user.is_authenticated %}
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="{% static 'images/sacco-logo.svg' %}" alt="SACCO logo">
+                <div>
+                    <strong>SACCO</strong>
+                    <span>Loan System</span>
+                </div>
+            </div>
+            {% if request.user.is_sacco_admin %}
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="/admin/users/user/">Members</a>
+                <a href="/admin/loans/loan/">Loans</a>
+                <a href="/admin/repayments/repayment/">Repayments</a>
+                <a href="/admin/penalties/penalty/">Penalties</a>
+                <a href="/admin/notifications/notification/">Notifications</a>
+                <a href="/admin/">Admin Panel</a>
+            {% else %}
+                <a href="{% url 'member_dashboard' %}">Dashboard</a>
+                <a href="{% url 'apply_loan' %}">Apply Loan</a>
+                <a href="{% url 'make_payment' %}">Make Payment</a>
+            {% endif %}
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        </aside>
+        <main class="main">
+            {% if messages %}
+                <div class="message-stack">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+    {% else %}
+        <main class="auth-main image-backdrop">
+            {% block public_content %}{% endblock %}
+        </main>
+    {% endif %}
+</body>
+</html>

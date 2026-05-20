@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+  <rect width="1400" height="900" fill="#0f172a"/>
+  <g opacity=".95">
+    <rect x="100" y="110" width="280" height="130" rx="14" fill="#d9f99d" transform="rotate(-12 240 175)"/>
+    <rect x="120" y="130" width="240" height="90" rx="10" fill="none" stroke="#15803d" stroke-width="8" transform="rotate(-12 240 175)"/>
+    <circle cx="240" cy="175" r="30" fill="#15803d" opacity=".35"/>
+  </g>
+  <g opacity=".85">
+    <rect x="980" y="120" width="300" height="140" rx="14" fill="#bfdbfe" transform="rotate(14 1130 190)"/>
+    <rect x="1004" y="145" width="252" height="90" rx="10" fill="none" stroke="#2563eb" stroke-width="8" transform="rotate(14 1130 190)"/>
+    <circle cx="1130" cy="190" r="32" fill="#2563eb" opacity=".34"/>
+  </g>
+  <g opacity=".75">
+    <rect x="460" y="585" width="330" height="150" rx="16" fill="#bbf7d0" transform="rotate(8 625 660)"/>
+    <rect x="486" y="612" width="278" height="96" rx="10" fill="none" stroke="#16a34a" stroke-width="9" transform="rotate(8 625 660)"/>
+    <circle cx="625" cy="660" r="36" fill="#16a34a" opacity=".35"/>
+  </g>
+  <g opacity=".65">
+    <rect x="860" y="560" width="250" height="120" rx="14" fill="#fde68a" transform="rotate(-10 985 620)"/>
+    <rect x="882" y="582" width="206" height="76" rx="10" fill="none" stroke="#d97706" stroke-width="8" transform="rotate(-10 985 620)"/>
+    <circle cx="985" cy="620" r="26" fill="#d97706" opacity=".35"/>
+  </g>
+  <path d="M0 670c180-80 320-90 500-18 230 92 430 66 620-18 120-53 210-70 280-54v320H0Z" fill="#ffffff" opacity=".08"/>
+  <path d="M0 0h1400v900H0Z" fill="#020617" opacity=".34"/>
+</svg>

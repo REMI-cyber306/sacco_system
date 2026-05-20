@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="loan-application-page">
+    <div class="loan-hero">
+        <div>
+            <span>Member financing</span>
+            <h1>Apply for a SACCO Loan</h1>
+            <p>Fill in your loan details, collateral, and guarantors for review by the SACCO team.</p>
+        </div>
+    </div>
+
+    <section class="table-section loan-rate-panel">
+        <div class="section-title">
+            <span>Rates</span>
+            <h2>Loan Interest Brackets</h2>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bracket</th>
+                        <th>Minimum</th>
+                        <th>Maximum</th>
+                        <th>Interest</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rate in loan_rates %}
+                        <tr>
+                            <td>{{ rate.name }}</td>
+                            <td>{{ rate.min_amount }}</td>
+                            <td>{{ rate.max_amount }}</td>
+                            <td>{{ rate.interest_rate }}%</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4">No loan brackets have been configured yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <form method="post" class="form-box wide-form loan-application-form">
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="error-box">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-section-heading">
+            <span>Step 1</span>
+            <h2>Loan Details</h2>
+        </div>
+        <div class="form-grid">
+            <div class="field-group">{{ form.amount.label_tag }} {{ form.amount }}</div>
+            <div class="field-group">{{ form.duration_months.label_tag }} {{ form.duration_months }}</div>
+            <div class="field-group">{{ form.requested_disbursement_date.label_tag }} {{ form.requested_disbursement_date }}</div>
+            <div class="field-group">{{ form.repayment_start_date.label_tag }} {{ form.repayment_start_date }}</div>
+            <div class="field-group full-span">{{ form.purpose.label_tag }} {{ form.purpose }}</div>
+        </div>
+
+        <div class="calculator-box">
+            <div class="form-section-heading compact-heading">
+                <span>Estimate</span>
+                <h2>Loan Calculator</h2>
+            </div>
+            <div class="calculator-grid">
+                <div>
+                    <span>Interest Rate</span>
+                    <strong id="calc-rate">-</strong>
+                </div>
+                <div>
+                    <span>Total Repayment</span>
+                    <strong id="calc-total">-</strong>
+                </div>
+                <div>
+                    <span>Monthly Payment</span>
+                    <strong id="calc-monthly">-</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section-heading">
+            <span>Step 2</span>
+            <h2>Collateral Property</h2>
+        </div>
+        <div class="form-grid">
+            <div class="field-group">{{ form.property_name.label_tag }} {{ form.property_name }}</div>
+            <div class="field-group">{{ form.estimated_value.label_tag }} {{ form.estimated_value }}</div>
+            <div class="field-group full-span">{{ form.collateral_description.label_tag }} {{ form.collateral_description }}</div>
+        </div>
+
+        <div class="form-section-heading">
+            <span>Step 3</span>
+            <h2>Member Guarantors</h2>
+        </div>
+        <div class="form-grid">
+            <div class="field-group">{{ form.guarantor_1.label_tag }} {{ form.guarantor_1 }}</div>
+            <div class="field-group">{{ form.guarantor_1_relationship.label_tag }} {{ form.guarantor_1_relationship }}</div>
+            <div class="field-group">{{ form.guarantor_2.label_tag }} {{ form.guarantor_2 }}</div>
+            <div class="field-group">{{ form.guarantor_2_relationship.label_tag }} {{ form.guarantor_2_relationship }}</div>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="error">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="form-actions">
+            <button type="submit">Submit Application</button>
+        </div>
+    </form>
+</div>
+
+{{ loan_rate_data|json_script:"loan-rate-data" }}
+<script>
+    const rates = JSON.parse(document.getElementById('loan-rate-data').textContent);
+    const amountInput = document.getElementById('id_amount');
+    const durationInput = document.getElementById('id_duration_months');
+    const rateOutput = document.getElementById('calc-rate');
+    const totalOutput = document.getElementById('calc-total');
+    const monthlyOutput = document.getElementById('calc-monthly');
+
+    function money(value) {
+        return new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    }
+
+    function updateCalculator() {
+        const amount = Number(amountInput.value);
+        const months = Number(durationInput.value);
+        const bracket = rates.find((rate) => amount >= rate.min_amount && amount <= rate.max_amount);
+
+        if (!amount || !months || !bracket) {
+            rateOutput.textContent = '-';
+            totalOutput.textContent = '-';
+            monthlyOutput.textContent = '-';
+            return;
+        }
+
+        const total = amount + (amount * bracket.interest_rate / 100);
+        rateOutput.textContent = `${bracket.interest_rate}%`;
+        totalOutput.textContent = money(total);
+        monthlyOutput.textContent = money(total / months);
+    }
+
+    if (amountInput && durationInput) {
+        amountInput.addEventListener('input', updateCalculator);
+        durationInput.addEventListener('input', updateCalculator);
+        updateCalculator();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block public_content %}
+<section class="login-shell">
+    <div class="welcome-panel">
+        <h1>SACCO Management System</h1>
+        <p>Manage members, savings, loans, repayments, penalties, and notifications through one clean Django system.</p>
+        <a class="button-link" href="{% url 'login' %}">Login</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="payment-page">
+    <section class="payment-card form-box">
+        <div class="payment-icon">S</div>
+        <div class="payment-heading">
+            <span>SACCO repayment</span>
+            <h1>Make Payment</h1>
+            <p>Record your loan repayment securely and keep your account up to date.</p>
+        </div>
+
+        <form method="post" class="payment-form">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="error-box">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
+            <div class="payment-field">
+                {{ form.loan.label_tag }}
+                {{ form.loan }}
+            </div>
+            <div class="payment-field">
+                {{ form.amount_paid.label_tag }}
+                {{ form.amount_paid }}
+            </div>
+            <div class="payment-field">
+                {{ form.payment_method.label_tag }}
+                {{ form.payment_method }}
+            </div>
+
+            <button type="submit">Record Payment</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

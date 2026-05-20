@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Admin Dashboard</h1>
+    <a class="button-link compact" href="/admin/">Open Django Admin</a>
+</div>
+
+<div class="cards">
+    <div class="card bank-card">
+        <h3>Virtual Bank Balance</h3>
+        <h1>{{ virtual_bank.balance }}</h1>
+    </div>
+    <div class="card">
+        <h3>Total Members</h3>
+        <h1>{{ total_members }}</h1>
+    </div>
+    <div class="card">
+        <h3>Total Loans</h3>
+        <h1>{{ total_loans }}</h1>
+    </div>
+    <div class="card">
+        <h3>Pending Loans</h3>
+        <h1>{{ pending_loans }}</h1>
+    </div>
+    <div class="card">
+        <h3>Repayments Today</h3>
+        <h1>{{ repayments_today }}</h1>
+    </div>
+    <div class="card accent-card">
+        <h3>Admin Notifications</h3>
+        <h1>{{ unread_notifications }}</h1>
+    </div>
+</div>
+
+<section class="table-section">
+    <h2>Virtual Bank Transactions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Loan</th>
+                <th>Description</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in recent_bank_transactions %}
+                <tr>
+                    <td>{{ transaction.get_transaction_type_display }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{% if transaction.loan %}#{{ transaction.loan.id }}{% else %}-{% endif %}</td>
+                    <td>{{ transaction.description|default:'-' }}</td>
+                    <td>{{ transaction.created_at|date:'Y-m-d H:i' }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">No virtual bank transactions yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="table-section">
+    <h2>Pending Loan Applications</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Amount</th>
+                <th>Interest</th>
+                <th>Monthly</th>
+                <th>Release Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loan in pending_applications %}
+                <tr>
+                    <td>{{ loan.member.username }}</td>
+                    <td>{{ loan.amount }}</td>
+                    <td>{{ loan.interest_rate }}%</td>
+                    <td>{{ loan.monthly_payment }}</td>
+                    <td>{{ loan.requested_disbursement_date|default:'-' }}</td>
+                    <td>
+                        <div class="inline-actions">
+                            <form method="post" action="{% url 'approve_loan' loan.id %}">
+                                {% csrf_token %}
+                                <button class="success-button" type="submit">Approve</button>
+                            </form>
+                            <form method="post" action="{% url 'reject_loan' loan.id %}">
+                                {% csrf_token %}
+                                <button class="danger-button" type="submit">Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No pending loan applications.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="table-section">
+    <h2>Recent Notifications</h2>
+    <div class="notification-list">
+        {% for notification in recent_notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                <p>{{ notification.message }}</p>
+                <span>{{ notification.created_at|date:'Y-m-d H:i' }}</span>
+            </div>
+        {% empty %}
+            <div class="notification-item">
+                <p>No admin notifications yet.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="table-section">
+    <h2>Recent Loans</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Outstanding</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loan in recent_loans %}
+                <tr>
+                    <td>{{ loan.member.username }}</td>
+                    <td>{{ loan.amount }}</td>
+                    <td><span class="status-badge status-{{ loan.status }}">{{ loan.get_status_display }}</span></td>
+                    <td>{{ loan.outstanding_balance }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No loans yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="table-section">
+    <h2>Recent Payments</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in recent_payments %}
+                <tr>
+                    <td>{{ payment.loan.member.username }}</td>
+                    <td>{{ payment.amount_paid }}</td>
+                    <td>{{ payment.get_payment_method_display }}</td>
+                    <td>{{ payment.payment_date|date:'Y-m-d H:i' }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No repayments yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="table-section">
+    <h2>Recent Members</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Phone</th>
+                <th>Savings</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in recent_members %}
+                <tr>
+                    <td>{{ member.username }}</td>
+                    <td>{{ member.phone|default:'-' }}</td>
+                    <td>{{ member.savings_balance }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="3">No members yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
