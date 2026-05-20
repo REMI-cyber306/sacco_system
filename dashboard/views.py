@@ -66,6 +66,19 @@ def notify_admins(message):
     notify_users(admins, 'SACCO admin notification', message)
 
 
+def notify_loan_guarantors(loan):
+    guarantors = [guarantor.guarantor for guarantor in loan.guarantors.select_related('guarantor')]
+    if guarantors:
+        notify_users(
+            guarantors,
+            'You were added as a SACCO loan guarantor',
+            (
+                f'{loan.member.username} added you as a guarantor for loan application '
+                f'#{loan.id} of {loan.amount}. Please contact SACCO administration if this is incorrect.'
+            ),
+        )
+
+
 @admin_required
 def admin_dashboard(request):
     today = timezone.localdate()
@@ -155,6 +168,7 @@ def apply_loan(request):
             f'{request.user.username} submitted loan application #{loan.id} for {loan.amount}. '
             'Review it for approval.'
         )
+        notify_loan_guarantors(loan)
         return redirect('member_dashboard')
     loan_rates = LoanRateTier.objects.filter(is_active=True).order_by('min_amount')
     loan_rate_data = [
