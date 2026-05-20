@@ -28,16 +28,44 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+def env_bool(name, default=False):
+    return os.environ.get(name, str(default)).strip().lower() in {
+        '1',
+        'true',
+        'yes',
+        'on',
+    }
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get(
-        'ALLOWED_HOSTS',
-        'localhost,127.0.0.1,0.0.0.0'
-    ).split(',')
-    if host.strip()
-]
+
+DEBUG = env_bool('DEBUG', default=not env_bool('RENDER'))
+
+
+def env_list(name, default=''):
+    values = []
+    raw_value = os.environ.get(name, default)
+    for item in raw_value.split(','):
+        value = item.strip()
+        if not value:
+            continue
+        # Tolerate accidental values like "ALLOWED_HOSTS=.onrender.com".
+        if '=' in value:
+            value = value.split('=', 1)[1].strip()
+        if value:
+            values.append(value)
+    return values
+
+
+ALLOWED_HOSTS = env_list(
+    'ALLOWED_HOSTS',
+    'localhost,127.0.0.1,0.0.0.0,sacco-system-n4md.onrender.com,.onrender.com',
+)
+
+CSRF_TRUSTED_ORIGINS = env_list(
+    'CSRF_TRUSTED_ORIGINS',
+    'https://sacco-system-n4md.onrender.com,https://*.onrender.com',
+)
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
