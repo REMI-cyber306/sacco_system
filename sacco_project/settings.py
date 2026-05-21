@@ -205,7 +205,7 @@ LOGOUT_REDIRECT_URL = 'login'
 SACCO_BANK_EMAIL = 'ashabaaugustus@gmail.com'
 
 # Gmail SMTP Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
