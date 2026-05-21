@@ -4,10 +4,13 @@ from .models import Notification
 
 
 def notify_user(user, subject, message):
-    # Always save notification in DB
-    Notification.objects.create(member=user, message=message)
+    # Save notification in database
+    Notification.objects.create(
+        member=user,
+        message=message
+    )
 
-    # Send email safely (never crash app if email fails)
+    # Send email safely
     if user.email:
         try:
             send_mail(
