@@ -206,24 +206,7 @@ SACCO_BANK_EMAIL = 'ashabaaugustus@gmail.com'
 
 # Email Configuration (Gmail SMTP)
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
-EMAIL_HOST_USER = os.environ.get(
-    'SACCO_EMAIL_HOST_USER',
-    'ashabaaugustus@gmail.com'
-)
-
-EMAIL_HOST_PASSWORD = os.environ.get(
-    'SACCO_EMAIL_HOST_PASSWORD',
-    'jizv sivc znld hsbl'
-)
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL = DEFAULT_FROM_EMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_FAIL_SILENTLY = True
 
