@@ -150,27 +150,17 @@ def reject_loan(request, loan_id):
     return redirect('admin_dashboard')
 
 
-@member_required
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from loans.models import LoanRateTier
+
+@login_required
 def apply_loan(request):
+
     form = LoanApplicationForm(request.POST or None, user=request.user)
-    if request.method == 'POST' and form.is_valid():
-        loan = form.save_application(request.user)
-        notify_user(
-            request.user,
-            'Your SACCO loan application was received',
-            (
-                f'Your loan application for {loan.amount} was submitted at '
-                f'{loan.interest_rate}% interest. Estimated total repayment is '
-                f'{loan.total_repayment}, with monthly payment of {loan.monthly_payment}.'
-            ),
-        )
-        notify_admins(
-            f'{request.user.username} submitted loan application #{loan.id} for {loan.amount}. '
-            'Review it for approval.'
-        )
-        notify_loan_guarantors(loan)
-        return redirect('member_dashboard')
+
     loan_rates = LoanRateTier.objects.filter(is_active=True).order_by('min_amount')
+
     loan_rate_data = [
         {
             'name': tier.name,
@@ -180,10 +170,48 @@ def apply_loan(request):
         }
         for tier in loan_rates
     ]
+
+    if request.method == 'POST' and form.is_valid():
+
+        loan = form.save_application(request.user)
+
+        # ✅ USER NOTIFICATION
+        try:
+            notify_user(
+                request.user,
+                'Loan Application Received',
+                f'Your loan of {loan.amount} was submitted successfully. '
+                f'Total repayment: {loan.total_repayment}, '
+                f'Monthly payment: {loan.monthly_payment}'
+            )
+        except Exception as e:
+            print("User notification error:", e)
+
+        # ✅ ADMIN NOTIFICATION
+        try:
+            notify_admins(
+                f'{request.user.username} submitted loan #{loan.id} '
+                f'for {loan.amount}. Please review.'
+            )
+        except Exception as e:
+            print("Admin notification error:", e)
+
+        # ✅ GUARANTORS NOTIFICATION
+        try:
+            notify_loan_guarantors(loan)
+        except Exception as e:
+            print("Guarantor notification error:", e)
+
+        return redirect('member_dashboard')
+
     return render(
         request,
         'member/apply_loan.html',
-        {'form': form, 'loan_rates': loan_rates, 'loan_rate_data': loan_rate_data},
+        {
+            'form': form,
+            'loan_rates': loan_rates,
+            'loan_rate_data': loan_rate_data
+        }
     )
 
 
