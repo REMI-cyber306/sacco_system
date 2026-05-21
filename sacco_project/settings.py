@@ -202,20 +202,33 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'redirect_user'
 LOGOUT_REDIRECT_URL = 'login'
 
-SACCO_BANK_EMAIL = 'shellymugabekazi9@gmail.com'
+SACCO_BANK_EMAIL = 'ashabaaugustus@gmail.com'
 
-EMAIL_HOST = os.environ.get('SACCO_EMAIL_HOST', '')
-EMAIL_PORT = int(os.environ.get('SACCO_EMAIL_PORT', '587'))
-EMAIL_HOST_USER = os.environ.get('SACCO_EMAIL_HOST_USER', SACCO_BANK_EMAIL)
-EMAIL_HOST_PASSWORD = os.environ.get('SACCO_EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS = os.environ.get('SACCO_EMAIL_USE_TLS', 'true').lower() == 'true'
-DEFAULT_FROM_EMAIL = os.environ.get('SACCO_DEFAULT_FROM_EMAIL', SACCO_BANK_EMAIL)
+# Gmail SMTP Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Gmail with 2-Step Verification
+EMAIL_HOST_USER = os.environ.get(
+    'SACCO_EMAIL_HOST_USER',
+    'ashabaaugustus@gmail.com'
+)
+
+EMAIL_HOST_PASSWORD = os.environ.get(
+    'SACCO_EMAIL_HOST_PASSWORD',
+    ''
+)
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
-EMAIL_FAIL_SILENTLY = env_bool('SACCO_EMAIL_FAIL_SILENTLY', default=True)
 
-if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_FAIL_SILENTLY = False
 
-SACCO_PENALTY_RATE = os.environ.get('SACCO_PENALTY_RATE', '0.05')
+SACCO_PENALTY_RATE = os.environ.get(
+    'SACCO_PENALTY_RATE',
+    '0.05'
+)
+
